@@ -1,216 +1,65 @@
-import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future main() async {
+import 'package:flutter_todo_phoenix/globals.dart';
+// import 'package:flutter_todo_phoenix/helpers.dart';
+import 'package:flutter_todo_phoenix/routes.dart';
+import 'package:flutter_todo_phoenix/state.dart';
+import 'package:flutter_todo_phoenix/stores.dart';
+import 'package:flutter_todo_phoenix/styles.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-    // await InAppWebViewController.setWebContentsDebuggingEnabled(true);
+  // enable webview debugging on android
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    await InAppWebViewController.setWebContentsDebuggingEnabled(true);
   }
 
+  // load persistent data
+  await sharedPrefs.init();
+
+  // // attempt to initialize firebase
+  // try {
+  //   await helpers.initializeFcm();
+  // } catch (err) {
+  //   debugPrint("Could not initialize FCM.");
+  //   // sharedPrefs.hasPlayServices = false;
+  // }
+
   runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyApp(),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  MyAppState createState() => MyAppState();
-}
-
-class MyAppState extends State<MyApp> {
-  final GlobalKey webViewKey = GlobalKey();
-
-  InAppWebViewController? webViewController;
-  InAppWebViewSettings settings = InAppWebViewSettings(
-      useShouldOverrideUrlLoading: true,
-      mediaPlaybackRequiresUserGesture: false,
-      allowsInlineMediaPlayback: true,
-      iframeAllow: "camera; microphone",
-      iframeAllowFullscreen: true);
-
-  PullToRefreshController? pullToRefreshController;
-  String url = "http://192.168.1.100:4002";
-  double progress = 0;
-  final urlController = TextEditingController();
-
-  int selectedIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    pullToRefreshController = kIsWeb
-        ? null
-        : PullToRefreshController(
-            settings: PullToRefreshSettings(
-              color: Colors.blue,
-            ),
-            onRefresh: () async {
-              if (defaultTargetPlatform == TargetPlatform.android) {
-                webViewController?.reload();
-              } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-                webViewController?.loadUrl(
-                    urlRequest:
-                        URLRequest(url: await webViewController?.getUrl()));
-              }
-            },
-          );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    void onItemTapped(int index) {
-      setState(() {
-        selectedIndex = index;
-        if (selectedIndex == 0) {
-          url = "http://192.168.1.100:4002/items/live";
-        } else if (selectedIndex == 1) {
-          url = "http://192.168.1.100:4002/";
-        }
-        urlController.text = url;
-      });
-    }
-
-    return WillPopScope(
-      onWillPop: () async {
-        final controller = webViewController;
-        if (controller != null) {
-          if (await controller.canGoBack()) {
-            controller.goBack();
-            return false;
-          }
-        }
-        return true;
-      },
-      child: Scaffold(
-        body: bodyWebView(url),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.task),
-              label: 'Items',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-          currentIndex: selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: onItemTapped,
-        ),
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final defaultTheme = ThemeData(
+      primarySwatch:
+          styles.colors.generateMaterialColor(colors.palette.primary),
+      // appBarTheme: const AppBarTheme(
+      //   toolbarHeight: 48.0,
+      // ),
     );
-  }
 
-  SafeArea bodyWebView(String webViewUrl) {
-    return SafeArea(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Stack(
-              children: [
-                InAppWebView(
-                  key: webViewKey,
-                  initialUrlRequest: URLRequest(
-                    url: WebUri(webViewUrl),
-                  ),
-                  initialSettings: settings,
-                  pullToRefreshController: pullToRefreshController,
-                  onWebViewCreated: (controller) {
-                    webViewController = controller;
-
-                    // create javacript handler for message passing
-                    controller.addJavaScriptHandler(
-                        handlerName: "titleHandler",
-                        callback: (args) {
-                          debugPrint(args as String);
-
-                          return {"hello": "world"};
-                        });
-                  },
-                  onLoadStart: (controller, url) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onPermissionRequest: (controller, request) async {
-                    return PermissionResponse(
-                        resources: request.resources,
-                        action: PermissionResponseAction.GRANT);
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
-
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      if (await canLaunchUrl(uri)) {
-                        // Launch the App
-                        await launchUrl(
-                          uri,
-                        );
-                        // and cancel the request
-                        return NavigationActionPolicy.CANCEL;
-                      }
-                    }
-
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    pullToRefreshController?.endRefreshing();
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onReceivedError: (controller, request, error) {
-                    pullToRefreshController?.endRefreshing();
-                  },
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {
-                      pullToRefreshController?.endRefreshing();
-                    }
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = url;
-                    });
-                  },
-                  onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  // onConsoleMessage: (controller, consoleMessage) {
-                  //   debugPrint(consoleMessage as String);
-                  // },
-                ),
-                progress < 1.0
-                    ? LinearProgressIndicator(value: progress)
-                    : Container(),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return MaterialApp.router(
+      routerConfig: router,
+      title: globals.projectName,
+      theme: defaultTheme,
+      darkTheme: ThemeData.dark(),
+      themeMode: ref.watch(themeProvider) == 'light'
+          ? ThemeMode.light
+          : ref.watch(themeProvider) == 'dark'
+              ? ThemeMode.dark
+              : ThemeMode.system,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
