@@ -62,19 +62,23 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: TextButton(
-          style: TextButton.styleFrom(
-            textStyle:
-                const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
-            foregroundColor: const Color(0xFFFFFF00),
-          ),
-          onPressed: () {
-            debugPrint("Title button pressed");
-          },
-          child: const Text("Todo List"),
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: TextButton(
+      //     style: TextButton.styleFrom(
+      //       textStyle:
+      //           const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w700),
+      //       foregroundColor: const Color(0xFFFFFFFF),
+      //     ),
+      //     onPressed: () {
+      //       webViewController!.loadUrl(
+      //         urlRequest: URLRequest(
+      //           url: WebUri("http://192.168.1.100:4002/"),
+      //         ),
+      //       );
+      //     },
+      //     child: const Text("Todo List"),
+      //   ),
+      // ),
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -83,12 +87,22 @@ class MyAppState extends State<MyApp> {
                 children: [
                   InAppWebView(
                     key: webViewKey,
-                    initialUrlRequest:
-                        URLRequest(url: WebUri("http://192.168.1.100:4002/")),
+                    initialUrlRequest: URLRequest(
+                      url: WebUri("http://192.168.1.100:4002/"),
+                    ),
                     initialSettings: settings,
                     pullToRefreshController: pullToRefreshController,
                     onWebViewCreated: (controller) {
                       webViewController = controller;
+
+                      // create javacript handler for message passing
+                      controller.addJavaScriptHandler(
+                          handlerName: "titleHandler",
+                          callback: (args) {
+                            debugPrint(args as String);
+
+                            return {"hello": "world"};
+                          });
                     },
                     onLoadStart: (controller, url) {
                       setState(() {
