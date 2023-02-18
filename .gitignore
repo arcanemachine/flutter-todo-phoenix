@@ -1,7 +1,9 @@
-# custom
+# CUSTOM #
+*.tmp
 Session*.vim
 flutter_jank_metrics*.json
-*.tmp
+gitignore.*
+
 
 # Miscellaneous
 *.class
