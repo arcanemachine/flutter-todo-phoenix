@@ -4,7 +4,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// import 'package:flutter_todo_phoenix/stores.dart';
+// import 'package:flutter_todo_phoenix/providers.dart';
 import 'package:flutter_todo_phoenix/styles.dart';
 
 class InitScreen extends ConsumerStatefulWidget {

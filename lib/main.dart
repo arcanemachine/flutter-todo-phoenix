@@ -7,7 +7,7 @@ import 'package:flutter_todo_phoenix/globals.dart';
 // import 'package:flutter_todo_phoenix/helpers.dart';
 import 'package:flutter_todo_phoenix/routes.dart';
 import 'package:flutter_todo_phoenix/state.dart';
-import 'package:flutter_todo_phoenix/stores.dart';
+import 'package:flutter_todo_phoenix/providers.dart';
 import 'package:flutter_todo_phoenix/styles.dart';
 
 void main() async {
