@@ -4,6 +4,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:flutter_todo_phoenix/globals.dart';
 // import 'package:flutter_todo_phoenix/providers.dart';
 import 'package:flutter_todo_phoenix/styles.dart';
 
@@ -58,9 +59,9 @@ class InitScreenState extends ConsumerState<InitScreen> {
       setState(() {
         selectedIndex = index;
         if (selectedIndex == 0) {
-          url = "http://192.168.1.100:4002/todos/live";
+          url = "${globals.serverUrl}/todos/live";
         } else if (selectedIndex == 1) {
-          url = "http://192.168.1.100:4002/settings";
+          url = "${globals.serverUrl}/settings";
         }
       });
 
