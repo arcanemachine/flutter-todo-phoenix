@@ -1,6 +1,5 @@
+import 'package:flutter_todo_phoenix/main.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:flutter_todo_phoenix/screens/init.dart';
 
 final List<GoRoute> _routes = [
   GoRoute(

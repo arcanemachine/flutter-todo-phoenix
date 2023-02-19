@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter_todo_phoenix/globals.dart';
+import 'package:flutter_todo_phoenix/constants.dart';
 // import 'package:flutter_todo_phoenix/helpers.dart';
 import 'package:flutter_todo_phoenix/routes.dart';
+import 'package:flutter_todo_phoenix/screens/web_view.dart';
 import 'package:flutter_todo_phoenix/state.dart';
 import 'package:flutter_todo_phoenix/providers.dart';
 import 'package:flutter_todo_phoenix/styles.dart';
@@ -41,17 +42,15 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // theme
     final defaultTheme = ThemeData(
       primarySwatch:
           styles.colors.generateMaterialColor(colors.palette.primary),
-      // appBarTheme: const AppBarTheme(
-      //   toolbarHeight: 48.0,
-      // ),
     );
 
     return MaterialApp.router(
       routerConfig: router,
-      title: globals.projectName,
+      title: constants.projectName,
       theme: defaultTheme,
       darkTheme: ThemeData.dark(),
       themeMode: ref.watch(themeProvider) == 'light'
@@ -61,5 +60,14 @@ class MyApp extends ConsumerWidget {
               : ThemeMode.system,
       debugShowCheckedModeBanner: false,
     );
+  }
+}
+
+class InitScreen extends ConsumerWidget {
+  const InitScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return const WebViewScreen();
   }
 }
