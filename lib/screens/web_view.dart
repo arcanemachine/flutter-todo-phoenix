@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_todo_phoenix/providers.dart';
+import 'package:flutter_todo_phoenix/state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter_todo_phoenix/constants.dart';
@@ -100,13 +103,24 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
 
         if (controller != null) {
           if (url == constants.urlPathBase) {
-            // close the app if the back button is pressed on the base URL
-            return true;
+            // if the back button is pressed on the base URL, close the app
+            SystemChannels.platform.invokeMethod('SystemNavigator.pop');
           } else if (url == constants.urlPathSettings) {
-            // select the 'items' bottom bar icon
+            /* clear history and return to base URL */
+            controller.clearHistory();
+
+            // select bottom bar icon: 'items'
             setState(() {
               bottomBarSelectedIndex = 0;
             });
+
+            controller.loadUrl(
+              urlRequest: URLRequest(
+                url: WebUri(constants.urlPathBase),
+              ),
+            );
+
+            return false;
           }
 
           if (await controller.canGoBack()) {
@@ -114,6 +128,7 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
             return false;
           }
         }
+
         return true;
       },
       child: Scaffold(
@@ -159,11 +174,17 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
       onWebViewCreated: (controller) {
         webViewController = controller;
 
-        // create javacript handler for message passing
+        // javascript handlers
         controller.addJavaScriptHandler(
           handlerName: "darkModeSet",
           callback: (args) {
-            return {"hello": "world"};
+            final String darkModeEnabled = args[0] ? "dark" : "light";
+
+            ref.read(themeProvider.notifier).state =
+                darkModeEnabled; // update theme
+            sharedPrefs.theme = darkModeEnabled; // save theme in preferences
+
+            setState(() {}); // update the widget even if the theme is the same
           },
         );
       },

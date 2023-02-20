@@ -26,29 +26,13 @@ class SharedPrefs {
   }
 
   void clearSession() {
-    logout();
     // _sharedPrefs?.remove('company_name_current');
   }
 
-  // auth
-  bool get userIsAuthenticated =>
-      _sharedPrefs?.getBool('is_authenticated') ?? false;
-  set userIsAuthenticated(bool val) {
-    _sharedPrefs?.setBool('is_authenticated', val);
-  }
-
-  login() {
-    _sharedPrefs?.setBool('is_authenticated', true);
-  }
-
-  logout() {
-    _sharedPrefs?.setBool('is_authenticated', false);
-  }
-
   // dark_mode
-  String get darkMode => _sharedPrefs?.getString('dark_mode') ?? 'light';
-  set darkMode(String val) {
-    _sharedPrefs?.setString('dark_mode', val);
+  String get theme => _sharedPrefs?.getString('theme') ?? 'light';
+  set theme(String val) {
+    _sharedPrefs?.setString('theme', val);
   }
 
   // // has_play_services
