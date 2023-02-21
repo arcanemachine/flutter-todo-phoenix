@@ -3,7 +3,7 @@
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_todo_phoenix/state.dart';
+// import 'package:flutter_todo_phoenix/state.dart';
 
 class _Helpers {
   // _ExampleHelpers get example => _ExampleHelpers();
@@ -86,13 +86,13 @@ class _Helpers {
 
   // Future confirmAuthStatusOrLogout() async {}
 
-  String? routesLoginRequired() {
-    if (!sharedPrefs.userIsAuthenticated) {
-      return "/"; // redirect to login
-    } else {
-      return null; // continue to route
-    }
-  }
+  // String? routesLoginRequired() {
+  //   if (!sharedPrefs.userIsAuthenticated) {
+  //     return "/"; // redirect to login
+  //   } else {
+  //     return null; // continue to route
+  //   }
+  // }
 
   // Widget saveRoute(GoRouterState state, Widget widget) {
   //   /** Save incoming route to shared preferences so that it will be seen

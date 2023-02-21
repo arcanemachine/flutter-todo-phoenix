@@ -30,7 +30,7 @@ class SharedPrefs {
   }
 
   // dark_mode
-  String get theme => _sharedPrefs?.getString('theme') ?? 'light';
+  String get theme => _sharedPrefs?.getString('theme') ?? 'system';
   set theme(String val) {
     _sharedPrefs?.setString('theme', val);
   }

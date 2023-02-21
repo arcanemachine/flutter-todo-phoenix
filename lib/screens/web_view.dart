@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -59,25 +61,31 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
           bottomBarSelectedIndex = index;
 
           if (bottomBarSelectedIndex == 0) {
+            // ignore repeated taps on the same item
             if (url != constants.urlPathBase) {
-              // navigate to URL
+              // if the item isn't already selected, navigate to URL
               url = constants.urlPathBase;
             } else {
-              // refresh the page
+              // on repeated taps, refresh the page
               webViewController?.reload();
             }
           } else if (bottomBarSelectedIndex == 1) {
             if (url != constants.urlPathSettings) {
-              // navigate to URL
+              // if the item isn't already selected, navigate to URL
               url = constants.urlPathSettings;
             } else {
-              // refresh the page
+              // on repeated taps, refresh the page
               webViewController?.reload();
             }
           }
         });
 
-        webViewController?.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
+        webViewController?.loadUrl(
+          urlRequest: URLRequest(
+            url: WebUri(url),
+            headers: {"x-platform": "flutter"},
+          ),
+        );
       }
 
       return BottomNavigationBar(
@@ -103,10 +111,12 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
 
         if (controller != null) {
           if (url == constants.urlPathBase) {
-            // if the back button is pressed on the base URL, close the app
+            // if the back button is pressed while we are at the base URL,
+            // then close the app
             SystemChannels.platform.invokeMethod('SystemNavigator.pop');
           } else if (url == constants.urlPathSettings) {
-            /* clear history and return to base URL */
+            // if the back button is pressed while we are at the settings URL,
+            // then clear history, return to base URL, and set index to 0
             controller.clearHistory();
 
             // select bottom bar icon: 'items'
@@ -117,6 +127,7 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
             controller.loadUrl(
               urlRequest: URLRequest(
                 url: WebUri(constants.urlPathBase),
+                headers: {"x-platform": "flutter"},
               ),
             );
 
@@ -162,6 +173,7 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
       key: webViewKey,
       initialUrlRequest: URLRequest(
         url: WebUri(url),
+        headers: {"x-platform": "flutter"},
       ),
       initialSettings: InAppWebViewSettings(
         useShouldOverrideUrlLoading: true,
@@ -186,7 +198,6 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
             sharedPrefs.theme = darkModeEnabled; // save theme in preferences
 
             setState(() {}); // update the widget even if the theme is the same
-            return {};
           },
         );
 
@@ -213,6 +224,21 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
       },
       shouldOverrideUrlLoading: (controller, navigationAction) async {
         var uri = navigationAction.request.url!;
+
+        if (Platform.isAndroid) {
+          if (navigationAction.request.headers?["x-platform"] != "flutter") {
+            // add flutter identification header
+            controller.loadUrl(
+              urlRequest: URLRequest(
+                url: WebUri(navigationAction.request.url.toString()),
+                headers: {
+                  "x-platform": "flutter",
+                },
+              ),
+            );
+            return NavigationActionPolicy.CANCEL;
+          }
+        }
 
         if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
             .contains(uri.scheme)) {
