@@ -174,7 +174,8 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
       onWebViewCreated: (controller) {
         webViewController = controller;
 
-        // javascript handlers
+        /* javascript handlers */
+        // dark mode - set
         controller.addJavaScriptHandler(
           handlerName: "darkModeSet",
           callback: (args) {
@@ -185,6 +186,17 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
             sharedPrefs.theme = darkModeEnabled; // save theme in preferences
 
             setState(() {}); // update the widget even if the theme is the same
+            return {};
+          },
+        );
+
+        // selected index - set
+        controller.addJavaScriptHandler(
+          handlerName: "bottomBarSelectedIndexSet",
+          callback: (args) {
+            setState(() {
+              bottomBarSelectedIndex = args[0];
+            }); // update the widget even if the theme is the same
           },
         );
       },
