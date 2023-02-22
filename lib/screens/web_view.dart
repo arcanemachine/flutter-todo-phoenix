@@ -55,6 +55,8 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+
     BottomNavigationBar bottomNavigationBar(BuildContext context) {
       void onItemTapped(int index) {
         setState(() {
