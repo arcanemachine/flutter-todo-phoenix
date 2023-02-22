@@ -40,15 +40,15 @@ class _Colors {
 }
 
 class _Palette {
-  final primary = const Color(0xFF025BE1);
+  final primary = const Color(0xFF257BFD);
   final secondary = const Color(0xFF5E656C);
-  final accent = const Color(0xFF0281E0);
-  final neutral = const Color(0xFF4B6B9B);
-  final base100 = const Color(0xFF242424);
-  final info = const Color(0xFF3ABFF8);
-  final success = const Color(0xFF36D399);
-  final warning = const Color(0xFFFBBD23);
-  final error = const Color(0xFFF87272);
+  final accent = const Color(0xFF0A6BFD);
+  final neutral = const Color(0xFF3B68AB);
+  final base100 = const Color(0xFFF6F6FF);
+  final info = const Color(0xFF97C0FE);
+  final success = const Color(0xFF198754);
+  final warning = const Color(0xFFFFC107);
+  final error = const Color(0xFFDC3545);
 }
 
 final colors = _Colors();
