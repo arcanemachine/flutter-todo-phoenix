@@ -191,7 +191,7 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
         controller.addJavaScriptHandler(
           handlerName: "darkModeSet",
           callback: (args) {
-            final String darkModeEnabled = args[0] ? "dark" : "light";
+            final String darkModeEnabled = args[0];
 
             ref.read(themeProvider.notifier).state =
                 darkModeEnabled; // update theme
