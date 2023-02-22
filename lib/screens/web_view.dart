@@ -142,29 +142,29 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
 
         return true;
       },
-      child: Scaffold(
-        body: bodyContainer(),
-        bottomNavigationBar: bottomNavigationBar(context),
+      child: SafeArea(
+        child: Scaffold(
+          body: bodyContainer(),
+          bottomNavigationBar: bottomNavigationBar(context),
+        ),
       ),
     );
   }
 
-  SafeArea bodyContainer() {
-    return SafeArea(
-      child: Column(
-        children: <Widget>[
-          Expanded(
-            child: Stack(
-              children: [
-                inAppWebView(),
-                loadingProgress < 1.0
-                    ? LinearProgressIndicator(value: loadingProgress)
-                    : Container(),
-              ],
-            ),
+  Widget bodyContainer() {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Stack(
+            children: [
+              inAppWebView(),
+              loadingProgress < 1.0
+                  ? LinearProgressIndicator(value: loadingProgress)
+                  : Container(),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
