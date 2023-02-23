@@ -105,15 +105,6 @@ class _Helpers {
 
 final helpers = _Helpers();
 
-// // example
-// class _ExampleHelpers {
-//   Future<List> listFetch() async {
-//     /** Returns enough data to populate the user's companyList. */
-//
-//     return ["hello", "world"];
-//   }
-// }
-
 // widgets
 class _WidgetHelpers {
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBarShow(
