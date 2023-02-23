@@ -10,6 +10,7 @@ import 'package:flutter_todo_phoenix/state.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:flutter_todo_phoenix/constants.dart';
+import 'package:flutter_todo_phoenix/helpers.dart';
 import 'package:flutter_todo_phoenix/styles.dart';
 
 class WebViewScreen extends ConsumerStatefulWidget {
@@ -203,13 +204,24 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
           },
         );
 
-        // selected index - set
+        // bottom bar selected index - set
         controller.addJavaScriptHandler(
           handlerName: "bottomBarSelectedIndexSet",
           callback: (args) {
             setState(() {
               bottomBarSelectedIndex = args[0];
             }); // update the widget even if the theme is the same
+          },
+        );
+
+        // clear navigation stack
+        controller.addJavaScriptHandler(
+          handlerName: "clearNavigationStack",
+          callback: (args) {
+            // clear navigation stack
+            while (helpers.canPop(context)) {
+              Navigator.pop(context);
+            }
           },
         );
       },
