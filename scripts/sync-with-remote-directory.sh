@@ -11,6 +11,11 @@ cd $(dirname "$0")/../
 # set remote directory
 remote_directory="/mnt/samba-shares/flutter_todo_phoenix"
 
+if [ "$1" != "" ]; then
+  # set custom remote directory using first positional argument
+  $remote_directory="$1"
+fi
+
 # use entr to watch for changes in the local directory and sync them to the
 # remote directory
-until ag -l --hidden | entr -d rsync -avu --delete "." $remote_directory --exclude 'build/*' --exclude '.dart_tool/*' --exclude 'ios/*'; do sleep 1; done
+until find . | entr -d rsync -avu --delete "." $remote_directory --exclude 'build/*' --exclude '.dart_tool/*' --exclude '.flutter-plugins/*' --exclude '.flutter-plugins-dependencies/*'; do sleep 1; done
