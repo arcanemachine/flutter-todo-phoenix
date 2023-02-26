@@ -2,6 +2,7 @@
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 // import 'package:flutter_todo_phoenix/state.dart';
 
@@ -12,6 +13,10 @@ class _Helpers {
     final NavigatorState? navigator = Navigator.maybeOf(context);
     return navigator != null && navigator.canPop();
   }
+
+  dynamic get templates => _TemplateHelpers();
+  dynamic get widgets => _WidgetHelpers;
+  // _ExampleHelpers get example => _ExampleHelpers();
 
   // Future<void> initializeFcm() async {
   //   // initialize firebase
@@ -105,6 +110,56 @@ class _Helpers {
 
 final helpers = _Helpers();
 
+class _TemplateHelpers {
+  String renderPageLoadError(WebUri url) {
+    return """
+<section
+  style="height: 100vh;
+         width: 100vw;
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         align-items: center;"
+>
+  <h1 style="font-size: 3.5rem; margin-bottom: 1.25rem">
+    Error: Not Connected
+  </h1>
+  <h2 style="font-size: 2.75rem">
+    Check your connection and try again.
+  </h2>
+  <div
+    id="reload-button"
+    style="width: 100%;
+           max-width: 90vw;
+           padding: 5rem;
+           font-size: 2.75rem;
+           color: blue;
+           text-align: center;"
+  >
+    Click here to reload
+  </div>
+</section>
+
+<script>
+  const reloadButtonElt = document.querySelector("#reload-button");
+
+  // when reload button clicked, show loading text and reload
+  reloadButtonElt.addEventListener("click", () => {
+    reloadButtonElt.textContent = "Loading...";
+
+    // reload after a brief delay so the user can see the loading text
+    setTimeout(() => {
+      location.href = '$url';
+    }, 500);
+  });
+</script>
+
+    """;
+  }
+}
+
+// final _templateHelpers = _TemplateHelpers();
+
 // widgets
 class _WidgetHelpers {
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBarShow(
@@ -129,4 +184,4 @@ class _WidgetHelpers {
   }
 }
 
-final widgetHelpers = _WidgetHelpers();
+// final _widgetHelpers = _WidgetHelpers();

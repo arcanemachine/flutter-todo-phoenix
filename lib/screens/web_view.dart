@@ -276,6 +276,8 @@ class WebViewScreenState extends ConsumerState<WebViewScreen> {
         });
       },
       onReceivedError: (controller, request, error) {
+        controller.loadData(
+            data: helpers.templates.renderPageLoadError(request.url));
         pullToRefreshController?.endRefreshing();
       },
       onProgressChanged: (controller, progress) {
